@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.9" type="plugin" group="ajax" method="upgrade">
+    <name>WebSumdu Monitoring</name>
+    <creationDate>March 28, 2024</creationDate>
+    <author>WebSumdu</author>
+    <authorUrl>http://www.yourwebsite.com</authorUrl>
+    <license>GNU General Public License version 2 or later</license>
+    <version>1.0</version>
+    <description>Плагін для моніторингу актуальності новин та подій</description>
+
+    <!-- Plugin File -->
+    <files>
+        <filename plugin="ajaxarticles">ajaxarticles.php</filename>
+    </files>
+
+    <!-- Plugin Parameters -->
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="news" type="text"
+                    description="Аліас новин"
+                    label="Скопіюйте та вставте аліас категорії новин"
+                />
+            </fieldset>
+        </fields>
+       <fields name="params">
+            <fieldset name="basic">
+                <field name="events" type="text"
+                    description="Аліас подій"
+                    label="Скопіюйте та вставте аліас категорії подій"
+                />
+            </fieldset>
+        </fields>
+    </config>
+
+    <!-- Plugin Language File -->
+    <languages>
+        <language tag="en-GB">language/en-GB/en-GB.plg_ajax_monitoring.ini</language>
+        <language tag="en-GB">language/en-GB/en-GB.plg_ajax_monitoring.sys.ini</language>
+    </languages>
+</extension>
