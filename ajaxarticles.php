@@ -10,38 +10,24 @@ class plgAjaxAjaxarticles extends JPlugin
 
       $news_alias   = $this->params->get('news');
       $events_alias = $this->params->get('events');
+      $eng_news_alias   = $this->params->get('eng_news');
+      $eng_events_alias = $this->params->get('eng_events');
 
       $sixMonthsAgo = date('Y-m-d', strtotime('-6 months'));
 
-      $data['setup_info'] = ['news_alias' => $news_alias, 'events_alias'=> $events_alias];
+      $data['setup_info'] = [
+         'news_alias' => $news_alias, 
+         'eng_news_alias' => $eng_news_alias, 
+         
+         'events_alias'=> $events_alias,
+         'eng_events_alias'=> $eng_events_alias
+      ];
 
-      $db = JFactory::getDbo();
-      $query = $db->getQuery(true);
-      $query->select($db->quoteName(array('a.id', 'a.title', 'a.created')));
-      $query->from($db->quoteName('#__content', 'a'));
-      $query->join('LEFT', $db->quoteName('#__categories', 'c') . ' ON a.catid = c.id');
-      $query->where($db->quoteName('a.state') . ' = 1');
-      $query->where($db->quoteName('c.alias') . ' = ' . $db->quote($news_alias));
-      $query->where($db->quoteName('publish_up') . ' >= ' . $db->quote($sixMonthsAgo));
-      $query->order($db->quoteName('a.created') . ' DESC');
-      $db->setQuery($query, 0, -1);
-      $news = $db->loadAssocList();
+      $data['news'] = $this->getArticles($news_alias);
+      $data['eng_news'] = $this->getArticles($eng_news_alias);
 
-      $data['news'] = $news;
-
-      $categoryId = $this->getCategoryIdFromAlias($events_alias);
-      $categoryIds = $this->getDescendantCategoryIds($categoryId);
-      $query = $db->getQuery(true);
-      $query->select($db->quoteName(array('id', 'title', 'alias', 'created')));
-      $query->from($db->quoteName('#__content'));
-      $query->where($db->quoteName('state') . ' = 1');
-      $query->where($db->quoteName('catid') . ' IN (' . implode(',', $categoryIds) . ')');
-      $query->where($db->quoteName('publish_up') . ' >= ' . $db->quote($sixMonthsAgo));
-      $query->order($db->quoteName('publish_up') . ' DESC');
-      $db->setQuery($query, 0, -1);
-      $events = $db->loadAssocList();
-
-      $data['events'] = $events;
+      $data['events'] = $this->getArticles($events_alias);
+      $data['eng_events'] = $this->getArticles($eng_events_alias);
 
       return $data;
    }
@@ -57,6 +43,27 @@ class plgAjaxAjaxarticles extends JPlugin
       $categoryId = $db->loadResult();
 
       return $categoryId;
+   }
+   private function getArticles($categoryAlias)
+   {
+      $sixMonthsAgo = date('Y-m-d', strtotime('-6 months'));
+
+      $categoryId = $this->getCategoryIdFromAlias($categoryAlias);
+      if(!$categoryId) return [];
+
+      $categoryIds = $this->getDescendantCategoryIds($categoryId);
+
+      $db = JFactory::getDbo();
+      $query = $db->getQuery(true);
+      $query->select($db->quoteName(array('id', 'title', 'alias', 'created')));
+      $query->from($db->quoteName('#__content'));
+      $query->where($db->quoteName('state') . ' = 1');
+      $query->where($db->quoteName('catid') . ' IN (' . implode(',', $categoryIds) . ')');
+      $query->where($db->quoteName('publish_up') . ' >= ' . $db->quote($sixMonthsAgo));
+      $query->order($db->quoteName('publish_up') . ' DESC');
+      $db->setQuery($query, 0, -1);
+      
+      return $db->loadAssocList() != null ? $db->loadAssocList() : [];
    }
 
    private function getDescendantCategoryIds($parentId)

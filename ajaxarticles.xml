@@ -23,6 +23,16 @@
                 />
             </fieldset>
         </fields>
+
+     	<fields name="params">
+            <fieldset name="basic">
+                <field name="eng_news" type="text"
+                    description="Аліас новин[eng]"
+                    label="Скопіюйте та вставте аліас категорії англомовних новин"
+                />
+            </fieldset>
+        </fields>
+
        <fields name="params">
             <fieldset name="basic">
                 <field name="events" type="text"
@@ -31,6 +41,16 @@
                 />
             </fieldset>
         </fields>
+
+       <fields name="params">
+            <fieldset name="basic">
+                <field name="eng_events" type="text"
+                    description="Аліас подій[eng]"
+                    label="Скопіюйте та вставте аліас категорії англомовних подій"
+                />
+            </fieldset>
+        </fields>
+
     </config>
 
     <!-- Plugin Language File -->
