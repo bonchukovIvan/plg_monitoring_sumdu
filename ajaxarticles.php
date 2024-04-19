@@ -13,7 +13,7 @@ class plgAjaxAjaxarticles extends JPlugin
 
       $sixMonthsAgo = date('Y-m-d', strtotime('-6 months'));
 
-      $data['setup_info'] = ['news_allias' => $news_alias, 'events_alias'=> $events_alias];
+      $data['setup_info'] = ['news_alias' => $news_alias, 'events_alias'=> $events_alias];
 
       $db = JFactory::getDbo();
       $query = $db->getQuery(true);
