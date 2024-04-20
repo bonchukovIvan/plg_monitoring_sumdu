@@ -20,7 +20,9 @@ class plgAjaxAjaxarticles extends JPlugin
          'eng_news_alias' => $eng_news_alias, 
          
          'events_alias'=> $events_alias,
-         'eng_events_alias'=> $eng_events_alias
+         'eng_events_alias'=> $eng_events_alias,
+
+         'start_date' => $sixMonthsAgo
       ];
 
       $data['news'] = $this->getArticles($news_alias);
@@ -32,24 +34,15 @@ class plgAjaxAjaxarticles extends JPlugin
       return $data;
    }
 
-   private function getCategoryIdFromAlias($categoryAlias)
-   {
-      $db = Factory::getDbo();
-      $query = $db->getQuery(true);
-      $query->select($db->quoteName('id'));
-      $query->from($db->quoteName('#__categories'));
-      $query->where($db->quoteName('alias') . ' = ' . $db->quote($categoryAlias));
-      $db->setQuery($query);
-      $categoryId = $db->loadResult();
-
-      return $categoryId;
-   }
    private function getArticles($categoryAlias)
    {
+      if(!$categoryAlias) return ['error' => 'category_not_set'];
+
       $sixMonthsAgo = date('Y-m-d', strtotime('-6 months'));
 
       $categoryId = $this->getCategoryIdFromAlias($categoryAlias);
-      if(!$categoryId) return [];
+
+      if(!$categoryId) return ['error' => 'category_not_found'];
 
       $categoryIds = $this->getDescendantCategoryIds($categoryId);
 
@@ -63,7 +56,20 @@ class plgAjaxAjaxarticles extends JPlugin
       $query->order($db->quoteName('publish_up') . ' DESC');
       $db->setQuery($query, 0, -1);
       
-      return $db->loadAssocList() != null ? $db->loadAssocList() : [];
+      return $db->loadAssocList() != null ? $db->loadAssocList() : ['error' => 'posts_not_found'];
+   }
+
+   private function getCategoryIdFromAlias($categoryAlias)
+   {
+      $db = Factory::getDbo();
+      $query = $db->getQuery(true);
+      $query->select($db->quoteName('id'));
+      $query->from($db->quoteName('#__categories'));
+      $query->where($db->quoteName('alias') . ' = ' . $db->quote($categoryAlias));
+      $db->setQuery($query);
+      $categoryId = $db->loadResult();
+
+      return $categoryId;
    }
 
    private function getDescendantCategoryIds($parentId)
