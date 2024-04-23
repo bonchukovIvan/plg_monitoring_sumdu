@@ -1,34 +1,36 @@
 <?php
 defined('_JEXEC') or die;
+
 use Joomla\CMS\Factory;
 use Joomla\CMS\Query\QueryFactory;
+
 class plgAjaxAjaxarticles extends JPlugin
 {
    public function onAjaxAjaxarticles()
    {
       $data = array();
 
-      $news_alias   = $this->params->get('news');
-      $events_alias = $this->params->get('events');
-      $eng_news_alias   = $this->params->get('eng_news');
-      $eng_events_alias = $this->params->get('eng_events');
+      $news_alias       = str_replace(' ', '', $this->params->get('news'));
+      $events_alias     = str_replace(' ', '', $this->params->get('events'));
+      $eng_news_alias   = str_replace(' ', '', $this->params->get('eng_news'));
+      $eng_events_alias = str_replace(' ', '', $this->params->get('eng_events'));
 
       $sixMonthsAgo = date('Y-m-d', strtotime('-6 months'));
 
       $data['setup_info'] = [
          'news_alias' => $news_alias, 
-         'eng_news_alias' => $eng_news_alias, 
-         
          'events_alias'=> $events_alias,
+
+         'eng_news_alias' => $eng_news_alias, 
          'eng_events_alias'=> $eng_events_alias,
 
          'start_date' => $sixMonthsAgo
       ];
 
       $data['news'] = $this->getArticles($news_alias);
-      $data['eng_news'] = $this->getArticles($eng_news_alias);
-
       $data['events'] = $this->getArticles($events_alias);
+
+      $data['eng_news'] = $this->getArticles($eng_news_alias);
       $data['eng_events'] = $this->getArticles($eng_events_alias);
 
       return $data;
