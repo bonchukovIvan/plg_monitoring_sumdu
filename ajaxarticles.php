@@ -15,7 +15,9 @@ class plgAjaxAjaxarticles extends JPlugin
       $eng_news_alias   = str_replace(' ', '', $this->params->get('eng_news'));
       $eng_events_alias = str_replace(' ', '', $this->params->get('eng_events'));
 
-      $sixMonthsAgo = date('Y-m-d', strtotime('-6 months'));
+      $start_date = isset($_GET['custom_date'])
+         ? date( 'Y-m-d', strtotime($_GET['custom_date']) )
+         : date( 'Y-m-d', strtotime('first day of january this year') );
 
       $data['setup_info'] = [
          'news_alias' => $news_alias, 
@@ -24,23 +26,20 @@ class plgAjaxAjaxarticles extends JPlugin
          'eng_news_alias' => $eng_news_alias, 
          'eng_events_alias'=> $eng_events_alias,
 
-         'start_date' => $sixMonthsAgo
+         'start_date' => $start_date,
       ];
 
-      $data['news'] = $this->getArticles($news_alias);
-      $data['events'] = $this->getArticles($events_alias);
-
-      $data['eng_news'] = $this->getArticles($eng_news_alias);
-      $data['eng_events'] = $this->getArticles($eng_events_alias);
+      $data['news'] = $this->getArticles($news_alias, $start_date);
+      $data['events'] = $this->getArticles($events_alias, $start_date);
+      $data['eng_news'] = $this->getArticles($eng_news_alias, $start_date);
+      $data['eng_events'] = $this->getArticles($eng_events_alias, $start_date);
 
       return $data;
    }
 
-   private function getArticles($categoryAlias)
+   private function getArticles($categoryAlias, $startPeriod)
    {
       if(!$categoryAlias) return ['error' => 'category_not_set'];
-
-      $sixMonthsAgo = date('Y-m-d', strtotime('-6 months'));
 
       $categoryId = $this->getCategoryIdFromAlias($categoryAlias);
 
@@ -54,7 +53,7 @@ class plgAjaxAjaxarticles extends JPlugin
       $query->from($db->quoteName('#__content'));
       $query->where($db->quoteName('state') . ' = 1');
       $query->where($db->quoteName('catid') . ' IN (' . implode(',', $categoryIds) . ')');
-      $query->where($db->quoteName('publish_up') . ' >= ' . $db->quote($sixMonthsAgo));
+      $query->where($db->quoteName('publish_up') . ' >= ' . $db->quote($startPeriod));
       $query->order($db->quoteName('publish_up') . ' DESC');
       $db->setQuery($query, 0, -1);
       
