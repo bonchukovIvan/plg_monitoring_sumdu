@@ -16,7 +16,7 @@ class plgAjaxAjaxarticles extends JPlugin
       $eng_events_alias = str_replace(' ', '', $this->params->get('eng_events'));
 
       $start_date = isset($_GET['custom_date'])
-         ? date( 'Y-m-d', strtotime($_GET['custom_date']) )
+         ? date( 'Y-m-d', strtotime(urlencode($_GET['custom_date'])) )
          : date( 'Y-m-d', strtotime('first day of january this year') );
 
       $data['setup_info'] = [
